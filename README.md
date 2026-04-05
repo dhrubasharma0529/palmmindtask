@@ -11,7 +11,7 @@ A modular FastAPI backend with two REST APIs:
 | Layer          | Choice                              |
 |----------------|-------------------------------------|
 | Framework      | FastAPI                             |
-| Embeddings     | OpenAI `text-embedding-3-small`     |
+| Embeddings     | gemini `gemini-embedding`     |
 | Vector DB      | Qdrant Cloud                        |
 | LLM            | Groq                     |
 | Chat Memory    | Redis Cloud                         |
@@ -37,7 +37,7 @@ rag_backend/
 │   ├── services/
 │   │   ├── extractor.py         # unstructured PDF/TXT text extraction
 │   │   ├── chunker.py           # Semantic + context-header chunking
-│   │   ├── embedder.py          # Batched OpenAI embedding calls
+│   │   ├── embedder.py          # Batched gemini embedding
 │   │   ├── vector_store.py      # Qdrant Cloud upsert + similarity search
 │   │   ├── memory.py            # Redis Cloud rolling-window session store
 │   │   ├── rag.py               # Custom RAG pipeline (no RetrievalQAChain)
@@ -96,48 +96,11 @@ cp .env.example .env
 
 Fill in your `.env`:
 
-```bash
-# OpenAI
-groq_api_key=sk-...
-
-# Qdrant Cloud — from https://cloud.qdrant.io → your cluster → API Keys
-QDRANT_URL=https://xxxx-xxxx.aws.qdrant.io
-QDRANT_API_KEY=your-qdrant-api-key
-QDRANT_COLLECTION=documents
-
-# Redis Cloud — from https://redis.com/try-free → your database → Connect
-REDIS_URL=redis://:your-password@redis-xxxxx.c1.us-east-1-2.ec2.redns.redis-cloud.com:12345
-
-# MySQL Workbench
-DATABASE_URL=mysql+pymysql://username:password@localhost:3306/rag_db
-```
 
 ### 5. Run the app
 
 ```bash
 uvicorn app.main:app --reload
 ```
-
-Interactive API docs: **http://localhost:8000/docs**
-
----
-
-## API Reference
-
-### Ingestion API
-
-#### `POST /ingest`
-Upload a PDF or TXT file.
-
-```bash
-curl -X POST http://localhost:8000/ingest \
-  -F "file=@document.pdf" \
-  -F "strategy=semantic"
-```
-
-| Param      | Type   | Default    | Description                    |
-|------------|--------|------------|--------------------------------|
-| `file`     | file   | —          | `.pdf` or `.txt` (required)    |
-| `strategy` | string | `semantic` | `semantic` or `context_header` |
 
 
